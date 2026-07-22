@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from langchain_ollama import OllamaLLM
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.exceptions import LLMException, RetrievalException
@@ -44,6 +45,10 @@ class RAGService:
             model=settings.ollama_model,
             temperature=0.1,
         )
+        #self._llm = ChatGoogleGenerativeAI(
+        #    model=settings.gemini_model_id,
+        #    temperature=0.7
+	#)
         os.makedirs(os.path.dirname(settings.log_path) or ".", exist_ok=True)
 
     # ------------------------------------------------------------------
