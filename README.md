@@ -1,15 +1,15 @@
 # Asistente RAG — Challenge Alura Agente G10
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green?logo=fastapi&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.41-red?logo=streamlit&logoColor=white)
-![Qwen3](https://img.shields.io/badge/LLM-Qwen3%20(Ollama)-blueviolet)
-![Gemini](https://img.shields.io/badge/Embeddings-Gemini%20text--embedding--004-orange?logo=google&logoColor=white)
+![Qwen2.5](https://img.shields.io/badge/LLM-Qwen2.5%20(Ollama)-blueviolet)
+![Gemini](https://img.shields.io/badge/Embeddings-Gemini%20gemini--embedding--001-orange?logo=google&logoColor=white)
 ![Chroma](https://img.shields.io/badge/Vector%20Store-Chroma-yellow)
 ![Oracle Cloud](https://img.shields.io/badge/Deploy-Oracle%20Cloud%20Free%20Tier-red?logo=oracle&logoColor=white)
 ![Kiro](https://img.shields.io/badge/Built%20with-Kiro%20SDD-0a0a0a?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiLz4=)
 
-> Agente de IA que responde preguntas en lenguaje natural sobre los documentos internos de tu empresa. Construido con RAG (Retrieval-Augmented Generation), FastAPI, Qwen3 y Chroma. Diseñado para correr en Oracle Cloud Free Tier sin costo.
+> Agente de IA que responde preguntas en lenguaje natural sobre los documentos internos de tu empresa. Construido con RAG (Retrieval-Augmented Generation), FastAPI, Qwen2.5 y Chroma. Diseñado para correr en Oracle Cloud Free Tier sin costo.
 
 ---
 
@@ -44,7 +44,7 @@ El flujo completo es:
 ```
 Usuario sube documento → Parser extrae texto → Chunking → Gemini genera embeddings → Chroma guarda vectores
                                                                                               ↓
-Usuario hace pregunta → Embedding de la pregunta → Chroma busca chunks similares → Qwen3 genera respuesta
+Usuario hace pregunta → Embedding de la pregunta → Chroma busca chunks similares → Qwen2.5 genera respuesta
                                                                                               ↓
                                                                           Respuesta + fuentes al usuario
 ```
@@ -77,7 +77,7 @@ Usuario hace pregunta → Embedding de la pregunta → Chroma busca chunks simil
 
 #### Prerrequisitos
 
-- Python 3.11+
+- Python 3
 - [Ollama](https://ollama.com) instalado y corriendo
 - API key de Google Gemini (gratis, sin tarjeta de crédito): [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
 
@@ -98,7 +98,7 @@ brew install ollama
 curl -fsSL https://ollama.com/install.sh | sh
 
 # Bajar el modelo (primera vez tarda ~5 GB)
-ollama pull qwen3:8b
+ollama pull qwen2.5:0.5b
 
 # Iniciar el servidor de Ollama (en una terminal aparte)
 ollama serve
@@ -107,7 +107,7 @@ ollama serve
 #### 3. Crear el entorno virtual e instalar dependencias
 
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
@@ -121,13 +121,13 @@ cp .env.example .env
 Editar `.env` y completar:
 
 ```env
-# LLM — Qwen3 via Ollama (local, sin costo)
+# LLM — Qwen2.5 via Ollama (local, sin costo)
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=qwen3:8b
+OLLAMA_MODEL=qwen2.5:0.5b
 
 # Embeddings — Google Gemini (gratis)
 GEMINI_API_KEY=tu_api_key_aqui
-GEMINI_EMBEDDING_MODEL=text-embedding-004
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
 
 # Vector Store y rutas
 CHROMA_PATH=./data/chroma_db
@@ -159,13 +159,13 @@ streamlit run streamlit_app.py
 
 ### Desplegar en Oracle Cloud Free Tier
 
-Oracle Cloud ofrece una VM ARM Ampere A1 **Always Free** (sin fecha de expiración) con 2 OCPU y 12 GB de RAM — suficiente para correr FastAPI + Streamlit + Chroma + Ollama con Qwen3:8b.
+Oracle Cloud ofrece una VM ARM Ampere A1 **Always Free** (sin fecha de expiración) con 2 OCPU y 12 GB de RAM — suficiente para correr FastAPI + Streamlit + Chroma + Ollama con Qwen2.5:0.5b.
 
 #### Paso 1 — Crear la instancia en OCI Console
 
 1. Entrar a [cloud.oracle.com](https://cloud.oracle.com) y navegar a **Compute → Instances → Create Instance**
 2. Configurar:
-   - **Shape**: `VM.Standard.A1.Flex` (ARM Ampere)
+   - **Shape**: `VM.Standard.E2.1.Micro`
    - **OCPUs**: 2 | **RAM**: 12 GB
    - **OS**: Ubuntu 22.04 (imagen ARM)
    - **SSH key**: subir tu clave pública
@@ -184,11 +184,11 @@ Oracle Cloud ofrece una VM ARM Ampere A1 **Always Free** (sin fecha de expiraci�
 ssh ubuntu@<IP_PUBLICA>
 
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y python3.11 python3.11-venv python3-pip nginx git curl
+sudo apt install -y python3-venv python3-pip nginx git curl python3 python3-pip python3-devel --allowerasing
 
 # Instalar Ollama
 curl -fsSL https://ollama.com/install.sh | sh
-ollama pull qwen3:8b
+ollama pull qwen2.5:0.5b
 ```
 
 #### Paso 3 — Clonar el proyecto y configurar el entorno
@@ -197,63 +197,50 @@ ollama pull qwen3:8b
 git clone https://github.com/tu-usuario/challenge-alura-agente-g10.git
 cd challenge-alura-agente-g10
 
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-cp .env.example .env
+cp .env.example .env 2>/dev/null || touch .env
 nano .env   # Agregar GEMINI_API_KEY y verificar las rutas
 ```
 
-#### Paso 4 — Crear el servicio systemd para FastAPI
+#### Paso 4 — Crear el servicio systemd para FastAPI 
 
-Crear `/etc/systemd/system/rag-api.service`:
+Crear `/etc/systemd/system/fastapi.service`:
 
 ```ini
 [Unit]
-Description=RAG FastAPI Backend
+Description=Servicio Backend FastAPI
 After=network.target
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/challenge-alura-agente-g10
-EnvironmentFile=/home/ubuntu/challenge-alura-agente-g10/.env
-ExecStart=/home/ubuntu/challenge-alura-agente-g10/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+User=opc
+WorkingDirectory=/home/opc/challenge-alura-agente-g10
+ExecStart=/home/opc/challenge-alura-agente-g10/venv/bin/python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-```
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable rag-api
-sudo systemctl start rag-api
 ```
 
 #### Paso 5 — Crear el servicio systemd para Streamlit
 
-Crear `/etc/systemd/system/rag-ui.service`:
+Crear `/etc/systemd/system/streamlit.service`:
 
 ```ini
 [Unit]
-Description=RAG Streamlit UI
-After=rag-api.service
+Description=Servicio Frontend Streamlit
+After=network.target fastapi.service
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/challenge-alura-agente-g10
-EnvironmentFile=/home/ubuntu/challenge-alura-agente-g10/.env
-ExecStart=/home/ubuntu/challenge-alura-agente-g10/.venv/bin/streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+User=opc
+WorkingDirectory=/home/opc/challenge-alura-agente-g10
+ExecStart=/home/opc/challenge-alura-agente-g10/venv/bin/python3 -m streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-```
-
-```bash
-sudo systemctl enable rag-ui
-sudo systemctl start rag-ui
 ```
 
 #### Paso 6 — Crear el servicio systemd para Ollama
@@ -274,12 +261,48 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
+#### Paso 7 — Dar permisos de ejecución
+
+- Dar permisos de ejecución a la carpeta venv para asegurar que systemd pueda acceder y ejecutar los binarios:
+```
+chmod -R 755 /home/opc/challenge-alura-agente-g10/venv
+```
+
+- Dar permisos de ejecución al directorio home del usuario opc:
+```
+chmod 755 /home/opc
+```
+
+- Verificar la ubicación exacta del ejecutable python3:
+```
+ls -l /home/opc/challenge-alura-agente-g10/venv/bin/python3
+```
+
+- Asegurar que opc sea el dueño de todos sus archivos:
+```
+sudo chown -R opc:opc /home/opc/challenge-alura-agente-g10
+```
+
+- Cambiar SELinux a modo permisivo
+```
+sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
+```
+
+#### Paso 8 — Habilitar e iniciar servicios
+
 ```bash
+sudo systemctl daemon-reload
+
+sudo systemctl enable fastapi
+sudo systemctl enable streamlit
 sudo systemctl enable ollama
+
+sudo systemctl start fastapi
+sudo systemctl start streamlit
 sudo systemctl start ollama
 ```
 
-#### Paso 7 — Configurar Nginx como reverse proxy
+#### Paso 9 — Configurar Nginx como reverse proxy
 
 Crear `/etc/nginx/sites-available/rag`:
 
@@ -320,7 +343,7 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-#### Paso 8 — Verificar el despliegue
+#### Paso 10 — Verificar el despliegue
 
 ```bash
 # Verificar servicios
@@ -329,6 +352,12 @@ sudo systemctl status rag-api rag-ui ollama
 # Smoke test
 curl http://localhost:8000/api/v1/health
 # → {"status":"ok","message":"RAG API is running."}
+```
+
+Si alguna de las aplicaciones falla, revisar los logs detallados ejecutando:
+```
+sudo journalctl -u fastapi -n 20 --no-pager
+sudo journalctl -u streamlit -n 20 --no-pager
 ```
 
 La app queda disponible en `http://<IP_PUBLICA>` (Streamlit) y `http://<IP_PUBLICA>/docs` (Swagger).
@@ -342,12 +371,13 @@ La app queda disponible en `http://<IP_PUBLICA>` (Streamlit) y `http://<IP_PUBLI
 | Lenguaje | Python 3.11+ | Tipado estático, ecosistema de IA maduro |
 | Framework API | FastAPI + Uvicorn | Async nativo, validación automática, Swagger incluido |
 | Validación | Pydantic v2 | Schemas robustos para requests y responses |
-| LLM | **Qwen3:8b via Ollama** | Modelo open-source local, sin costo, sin API key |
-| Embeddings | **Gemini text-embedding-004** | API gratuita de Google, alta calidad semántica |
+| LLM | **Qwen2.5:0.5b via Ollama** | Modelo open-source local orientado a eficiencia en CPU, sin costo, sin API key |
+| Embeddings | **Gemini gemini-embedding-001** | API gratuita de Google, alta calidad semántica |
 | RAG | LangChain | Chunking con overlap, integración con Chroma y Ollama |
 | Vector Store | **Chroma** | Corre local en disco, sin servidor externo |
 | Interfaz | Streamlit | Prototipo web rápido con soporte de estado de sesión |
 | Despliegue | **Oracle Cloud Free Tier** | VM ARM A1 Always Free, 2 OCPU / 12 GB RAM, sin expiración |
+
 
 ### Formatos de documento soportados
 
@@ -468,6 +498,22 @@ curl -X POST http://localhost:8000/api/v1/chat/query \
   "response_time_ms": 1840
 }
 ```
+
+---
+
+## Capturas del despliegue de la aplicación
+
+### Interfaz de usuario (UI) en Streamlit
+
+![AppEnEjecucion](./img/politica.jpg)
+
+### Servicio en ejecución en Oracle Cloud Free Tie
+
+![AppDeployOCI](./img/deployOCI.jpg)
+
+### Swagger
+
+![Swagger](./img/swagger.jpg)
 
 ---
 
