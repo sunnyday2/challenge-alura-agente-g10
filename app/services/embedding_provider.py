@@ -1,6 +1,6 @@
 import time
 from typing import Protocol
-
+from app.config import settings
 from app.exceptions import LLMException
 
 
@@ -11,9 +11,9 @@ class EmbeddingProvider(Protocol):
 
 
 class GeminiEmbeddingProvider:
-    """Genera embeddings con Google Gemini text-embedding-004 via google-genai."""
+    """Genera embeddings con Google Gemini via google-genai."""
 
-    MODEL = "text-embedding-004"
+    MODEL = settings.gemini_embedding_model
     _MAX_RETRIES = 3
     _RETRY_DELAY = 2  # segundos
 

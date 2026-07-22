@@ -1,0 +1,14 @@
+[Unit]
+Description=RAG FastAPI Backend — Alura G10
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/challenge-alura-agente-g10
+EnvironmentFile=/home/ubuntu/challenge-alura-agente-g10/.env
+ExecStart=/home/ubuntu/challenge-alura-agente-g10/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

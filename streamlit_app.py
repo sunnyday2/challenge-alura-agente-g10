@@ -6,7 +6,7 @@ Secciones:
   2. Chat con el agente →  POST /api/v1/chat/query
   3. Documentos indexados → GET /api/v1/documents
 """
-
+from __future__ import annotations
 import os
 
 import requests
